@@ -5,7 +5,7 @@ import torch.nn as nn
 class CommonLitModel(nn.Module):
     "CommonLitModel for CommonLit Readability Prize target prediction"
 
-    def __init__(self, model_name, tok_len=30528) -> None:
+    def __init__(self, model_name, tok_len) -> None:
         super().__init__()
         self.model = AutoModel.from_pretrained(model_name)
         self.model.resize_token_embeddings(tok_len)

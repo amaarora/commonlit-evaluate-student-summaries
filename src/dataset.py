@@ -9,20 +9,26 @@ from typing import Any
 class CommonLitDataset(Dataset):
     "Dataset for CommonLit Readability Prize, reading summary and text from csv file"
 
-    def __init__(self, model, df) -> None:
+    def __init__(self, model_name, df, tok=None) -> None:
         super().__init__()
-        self.tok = AutoTokenizer.from_pretrained(model)
-        self.tok.add_tokens(
-            [
-                "<PROMPT>",
-                "<SUMMARY>",
-                "<PROMPT_TITLE>",
-                "</PROMPT>",
-                "</SUMMARY>",
-                "</PROMPT_TITLE>",
-            ]
-        )
+        if not tok:
+            self.tok = AutoTokenizer.from_pretrained(model_name)
+            self.tok.add_tokens(
+                [
+                    "<PROMPT>",
+                    "<SUMMARY>",
+                    "<PROMPT_TITLE>",
+                    "</PROMPT>",
+                    "</SUMMARY>",
+                    "</PROMPT_TITLE>",
+                ]
+            )
+        else:
+            self.tok = tok
         self.df = df
+
+    def __len__(self) -> int:
+        return len(self.df)
 
     def __getitem__(self, idx) -> Any:
         text = self.df.iloc[idx].excerpt
