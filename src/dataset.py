@@ -4,6 +4,7 @@ from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
 from transformers import AutoTokenizer, AutoModel
 from typing import Any
+import torch
 
 
 class CommonLitDataset(Dataset):
@@ -39,8 +40,8 @@ class CommonLitDataset(Dataset):
             {
                 "input_ids": text.input_ids.squeeze(),
                 "attention_mask": text.attention_mask.squeeze(),
-                "content": self.df.iloc[idx].content,
-                "wording": self.df.iloc[idx].wording,
+                "content": torch.tensor(self.df.iloc[idx].content, dtype=torch.float),
+                "wording": torch.tensor(self.df.iloc[idx].wording, dtype=torch.float),
             }
             if "content" in self.df.columns
             else {

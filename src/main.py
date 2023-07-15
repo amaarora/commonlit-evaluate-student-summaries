@@ -24,7 +24,9 @@ def train_one_epoch(model, optim, train_loader, device, scheduler=None):
         content = batch["content"].to(device)
         wording = batch["wording"].to(device)
         output = model(input_ids, attention_mask)
-        loss = (F.mse_loss(output, content) + F.mse_loss(output, wording)) / 2
+        loss = (
+            F.mse_loss(output[:, 0], content) + F.mse_loss(output[:, 1], wording)
+        ) / 2
         loss.backward()
         optim.step()
         if scheduler is not None:
@@ -48,6 +50,7 @@ if __name__ == "__main__":
         train_loader = DataLoader(train_dataset, batch_size=8)
         val_loader = DataLoader(val_dataset, batch_size=8)
         model = CommonLitModel(model_name=model_name, tok_len=len(train_dataset.tok))
+        model.to("cuda")
         opt = AdamW(model.parameters(), lr=1e-4)
         sched = get_cosine_schedule_with_warmup(
             opt, num_warmup_steps=10, num_training_steps=len(train_loader) * 1
