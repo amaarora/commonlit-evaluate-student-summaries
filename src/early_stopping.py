@@ -41,10 +41,6 @@ class EarlyStopping:
             if self.counter >= self.patience:
                 self.early_stop = True
 
-        # store best model to wandb
-        if epoch == self.total_epochs or self.early_stop:
-            self.save_artifact("best-model.pth", self.best_model_path)
-
     def save_checkpoint(self, epoch_score, model, model_path):
         model_path = Path(model_path)
         parent = model_path.parent
@@ -52,8 +48,3 @@ class EarlyStopping:
         if epoch_score not in [-np.inf, np.inf, -np.nan, np.nan]:
             torch.save(model.state_dict(), model_path)
             logging.info(f"Model saved at {model_path}")
-
-    def save_artifact(self, name, file_path):
-        artifact = wandb.Artifact(name, type="model")
-        artifact.add_file(file_path)
-        wandb.run.log_artifact(artifact)
